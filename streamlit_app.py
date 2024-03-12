@@ -1,40 +1,66 @@
-import altair as alt
-import numpy as np
-import pandas as pd
 import streamlit as st
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import linregress, t
 
-"""
-# Welcome to Streamlit!
+# Introduction
+st.title('Ionising Radiation Experiment Analysis')
+st.markdown("""
+This app guides you through the process of analyzing data from an Ionising Radiation experiment using linear regression. 
+We'll fit a linear model to the data to verify the inverse square law, visualize the fit, and discuss the statistical significance of our results.
+""")
 
-Edit `/streamlit_app.py` to customize this app to your heart's desire :heart:.
-If you have any questions, checkout our [documentation](https://docs.streamlit.io) and [community
-forums](https://discuss.streamlit.io).
+# Data Upload
+uploaded_file = st.file_uploader("Upload your CSV data file", type=["csv"])
+if uploaded_file is not None:
+    df = pd.read_csv(uploaded_file)
+    if not df.empty:
+        st.write("First few rows of your dataset:")
+        st.dataframe(df.head())
 
-In the meantime, below is an example of what you can do with just a few lines of code:
-"""
+        # Column Selection
+        distance_col = st.selectbox('Select the column for distance (in meters):', df.columns)
+        count_col = st.selectbox('Select the column for counts:', df.columns, index=1)
 
-num_points = st.slider("Number of points in spiral", 1, 10000, 1100)
-num_turns = st.slider("Number of turns in spiral", 1, 300, 31)
+        # Data Preparation
+        df['Count Rate'] = df[count_col] / 60  # Convert to count rate
+        df['Inverse Square Distance'] = 1 / df[distance_col]**2
 
-indices = np.linspace(0, 1, num_points)
-theta = 2 * np.pi * num_turns * indices
-radius = indices
+        # Linear Regression
+        regression_result = linregress(df['Inverse Square Distance'], df['Count Rate'])
+        
+        # Visualization
+        fig, ax = plt.subplots()
+        ax.plot(df['Inverse Square Distance'], df['Count Rate'], 'o', label='Original data', markersize=10)
+        ax.plot(df['Inverse Square Distance'], regression_result.intercept + regression_result.slope * df['Inverse Square Distance'], 'r', label='Fitted line')
+        ax.set_xlabel('Inverse Square of Distance (1/m^2)')
+        ax.set_ylabel('Count Rate (counts/s)')
+        ax.set_title('Linear Regression with linregress')
+        ax.legend()
+        st.pyplot(fig)
 
-x = radius * np.cos(theta)
-y = radius * np.sin(theta)
+        # Display Regression Results
+        st.subheader('Regression Analysis')
+        st.write(f"Slope (proportional to intensity): {regression_result.slope:.4f}")
+        st.write(f"Intercept: {regression_result.intercept:.4f}")
+        st.write(f"R-squared value: {regression_result.rvalue**2:.4f}")
+        st.write(f"p-value of the regression: {regression_result.pvalue:.4f}")
+        st.write(f"Standard error of the estimate: {regression_result.stderr:.4f}")
 
-df = pd.DataFrame({
-    "x": x,
-    "y": y,
-    "idx": indices,
-    "rand": np.random.randn(num_points),
-})
+        # Additional Statistical Analysis (if needed)
+        # Here you can include calculations for confidence intervals or other statistics
+        # similar to the notebook example.
 
-st.altair_chart(alt.Chart(df, height=700, width=700)
-    .mark_point(filled=True)
-    .encode(
-        x=alt.X("x", axis=None),
-        y=alt.Y("y", axis=None),
-        color=alt.Color("idx", legend=None, scale=alt.Scale()),
-        size=alt.Size("rand", legend=None, scale=alt.Scale(range=[1, 150])),
-    ))
+        # Conclusion
+        if regression_result.rvalue**2 > 0.9:
+            st.markdown("### The data strongly supports the inverse square law.")
+        else:
+            st.markdown("### The data does not strongly support the inverse square law.")
+    else:
+        st.error("The uploaded file is empty. Please upload a valid CSV file.")
+else:
+    st.info('Awaiting CSV file to be uploaded for analysis.')
+
+# Additional sections can be added here to discuss the theory behind linear regression,
+# assumptions, and how they apply to the Ionising Radiation experiment.
