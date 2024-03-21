@@ -12,12 +12,14 @@ st.markdown("""
 This app guides you through the process of analyzing data from an Ionising Radiation experiment using linear regression. 
 We'll fit a linear model to the data to verify the inverse square law, visualize the fit, and discuss the statistical significance of our results.
 Below is the code that creates this title and introduction in the app:
-""")
+st.title('Ionising Radiation Experiment Analysis')
+st.markdown("This app guides you through the process...")""")
 
 # Data upload section with explanation
 st.markdown("""
 ### Data Upload
 Upload your CSV data file below. The following code enables file uploading:
+
 uploaded_file = st.file_uploader("Upload your CSV data file", type=["csv"])""")
 uploaded_file = st.file_uploader("Upload your CSV data file", type=["csv"])
 
@@ -89,10 +91,11 @@ if uploaded_file is not None:
 
         # Display and explain regression results
         st.subheader('Regression Analysis')
-        st.write(f"Slope: {regression_result.slope:.4f}")
+        # write slope with standard error
+        st.write(f"Slope: {regression_result.slope:.4f}", f"± {regression_result.stderr:.4f}")
         st.write(f"Intercept: {regression_result.intercept:.4f}")
         st.write(f"R-squared: {regression_result.rvalue**2:.4f}")
-        # st.write(f"p-value: {regression_result.pvalue:.4f}")
+        st.write(f"p-value: {regression_result.pvalue:.4f}")
         st.write(f"Standard error: {regression_result.stderr:.4f}")
         st.markdown("""
         Here's how we display the regression results in the app:
@@ -100,6 +103,7 @@ if uploaded_file is not None:
         st.write(f"Slope: {regression_result.slope:.4f}")
         st.write(f"Intercept: {regression_result.intercept:.4f}")
         st.write(f"R-squared: {regression_result.rvalue**2:.4f}")
+        st.write(f"p-value: {regression_result.pvalue:.4f}")
         st.write(f"Standard error: {regression_result.stderr:.4f}")
         ```
         """)
