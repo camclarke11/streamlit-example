@@ -77,6 +77,8 @@ if uploaded_file is not None:
         ax.plot(df['Inverse Square Distance'], regression_result.intercept + regression_result.slope * df['Inverse Square Distance'], 'r', label='Fitted line')
         ax.set_xlabel('Inverse Square of Distance (1/m^2)')
         ax.set_ylabel('Count Rate (counts/s)')
+        #add error bars
+        ax.errorbar(df['Inverse Square Distance'], df['Count Rate'], yerr=np.sqrt(df[count_col])/60, fmt='o', color='black', ecolor='lightgray', elinewidth=3, capsize=0)
         ax.legend()
         st.pyplot(fig)
         st.markdown("""
