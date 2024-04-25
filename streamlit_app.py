@@ -8,12 +8,12 @@ from scipy.stats import linregress
 st.title('Ionising Radiation Experiment Analysis')
 
 # Introduction to the app with code explanation
+
 st.markdown("""
-This app guides you through the process of analyzing data from an Ionising Radiation experiment using linear regression. 
-We'll fit a linear model to the data to verify the inverse square law, visualize the fit, and discuss the statistical significance of our results.
-Below is the code that creates this title and introduction in the app:
+### Introduction
+This app guides you through the process of analyzing data from an Ionising Radiation experiment using linear regression. We'll fit a linear model to the data to verify the inverse square law, visualize the fit, and discuss the statistical significance of our results. Below is the code that creates this title and introduction in the app:""")
 st.title('Ionising Radiation Experiment Analysis')
-st.markdown("This app guides you through the process...")""")
+
 
 # Data upload section with explanation
 st.markdown("""
@@ -73,14 +73,18 @@ if uploaded_file is not None:
 
         # Visualization and explanation
         fig, ax = plt.subplots()
-        ax.plot(df['Inverse Square Distance'], df['Count Rate'], 'o', label='Original data', markersize=10)
-        ax.plot(df['Inverse Square Distance'], regression_result.intercept + regression_result.slope * df['Inverse Square Distance'], 'r', label='Fitted line')
+        # Plot the original data in blue
+        ax.plot(df['Inverse Square Distance'], df['Count Rate'], 'o', label='Original data', markersize=10, zorder=2)
+        # Plot the regression line
+        ax.plot(df['Inverse Square Distance'], regression_result.intercept + regression_result.slope * df['Inverse Square Distance'], 'r', label='Fitted line', zorder=1)
         ax.set_xlabel('Inverse Square of Distance (1/m^2)')
         ax.set_ylabel('Count Rate (counts/s)')
-        #add error bars
-        ax.errorbar(df['Inverse Square Distance'], df['Count Rate'], yerr=np.sqrt(df[count_col])/60, fmt='o', color='black', ecolor='lightgray', elinewidth=3, capsize=0)
+        # Add error bars behind the data points
+        error_size = np.sqrt(df[count_col]) / 60  # Increase this if needed for visibility
+        ax.errorbar(df['Inverse Square Distance'], df['Count Rate'], yerr=error_size, fmt='o', color='black', ecolor='lightgray', elinewidth=3, capsize=5, zorder=1)
         ax.legend()
         st.pyplot(fig)
+
         st.markdown("""
         ### Visualization
         The plot visualizes the data points and the fitted regression line. Here's how we create this plot:
