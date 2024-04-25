@@ -12,7 +12,8 @@ st.title('Ionising Radiation Experiment Analysis')
 st.markdown("""
 ### Introduction
 This app guides you through the process of analyzing data from an Ionising Radiation experiment using linear regression. We'll fit a linear model to the data to verify the inverse square law, visualize the fit, and discuss the statistical significance of our results. Below is the code that creates this title and introduction in the app:""")
-st.title('Ionising Radiation Experiment Analysis')
+
+
 
 
 # Data upload section with explanation
